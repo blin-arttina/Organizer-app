@@ -1,43 +1,40 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Download Project Organizer</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    a.button {
-      background-color: #d32f2f;
-      padding: 15px 30px;
-      border-radius: 10px;
-      font-size: 18px;
-      color: white;
-      text-decoration: none;
-      border: 2px solid gray;
-    }
-    a.button:hover {
-      background-color: #b71c1c;
-    }
-    p {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #ccc;
-    }
-  </style>
+  <title>Add Polygon Network</title>
+  <meta charset="UTF-8" />
 </head>
-<body>
-  <h1>Project Organizer</h1>
-  <a class="button" href="ProjectOrganizer.apk" download>Download APK</a>
-  <p>If prompted, allow installation from unknown sources.</p>
+<body style="background-color:#111; color:white; font-family:sans-serif; text-align:center; padding:50px;">
+  <h1>Add Polygon Mainnet to Brave Wallet</h1>
+  <p>Click the button below to add the Polygon network automatically.</p>
+  <button onclick="addPolygon()" style="padding:10px 20px; font-size:18px; background:#8247e5; color:white; border:none; border-radius:5px;">Add Polygon Network</button>
+
+  <script>
+    async function addPolygon() {
+      if (window.ethereum) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x89',
+              chainName: 'Polygon Mainnet',
+              nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC',
+                decimals: 18
+              },
+              rpcUrls: ['https://polygon-rpc.com'],
+              blockExplorerUrls: ['https://polygonscan.com']
+            }]
+          });
+          alert('Polygon network added successfully!');
+        } catch (addError) {
+          alert('Failed to add network: ' + addError.message);
+        }
+      } else {
+        alert('Web3 provider not found. Try using Brave or MetaMask.');
+      }
+    }
+  </script>
 </body>
 </html>
