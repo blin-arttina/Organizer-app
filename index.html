@@ -1,231 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>One-Tap Sourcify Verify — blin-arttina/Assets</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tina — Auto Verify (embedded, downloads ready)</title>
 <style>
-  :root {
-    --bg:#0b0b0f;
-    --fg:#f5f5f7;
-    --muted:#b9b9c0;
-    --red:#e63946;
-    --card:#121219;
-    --outline:#6b7280;
-    --good:#22c55e;
-    --bad:#ef4444;
-    --warn:#f59e0b;
-  }
-  html,body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans',sans-serif;line-height:1.5;margin:0}
-  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
-  h1{font-size:clamp(22px,4vw,34px);margin:0 0 8px}
-  p.big{font-size:clamp(16px,2.6vw,20px);color:var(--muted);margin-top:0}
-  .card{background:var(--card);border:2px solid var(--outline);border-radius:16px;padding:16px;margin:18px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-  label{display:block;font-size:20px;margin:.4rem 0 .2rem}
-  input,select{width:100%;background:#0f0f15;color:var(--fg);border:2px solid var(--outline);border-radius:12px;padding:14px;font-size:20px;outline:none}
-  input[type='file']{padding:10px}
-  .row{display:grid;grid-template-columns:1fr;gap:12px}
-  @media(min-width:680px){.row{grid-template-columns:1fr 1fr}}
-  button{cursor:pointer;border:none;background:var(--red);color:#fff;border-radius:14px;padding:16px 18px;font-size:22px;font-weight:700;box-shadow:0 6px 14px rgba(230,57,70,.35);}
-  button.secondary{background:#1f2937;color:#fff;border:2px solid var(--outline);box-shadow:none}
-  button:disabled{opacity:.6;cursor:not-allowed}
-  pre{white-space:pre-wrap;word-break:break-word;font-size:16px}
-  .btns{display:flex;gap:12px;flex-wrap:wrap}
-  .tiny{font-size:14px;color:var(--muted)}
-  .status{display:inline-flex;align-items:center;gap:8px;margin-right:10px;margin-top:6px}
-  .dot{width:12px;height:12px;border-radius:50%}
-  .ok{background:var(--good)} .ng{background:var(--bad)} .warn{background:var(--warn)}
-  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#0f172a;border:1px solid var(--outline);border-radius:6px;padding:2px 6px}
-  a, a:visited{color:#93c5fd}
-  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+  :root{{--bg:#0b0b0f;--fg:#f5f5f7;--muted:#b9b9c0;--card:#121219;--red:#ef4444;--outline:#6b7280;--ok:#22c55e;--warn:#f59e0b;}}
+  html,body{{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.45}}
+  .wrap{{max-width:980px;margin:0 auto;padding:20px 14px 64px}}
+  h1{{margin:0 0 8px;font-size:clamp(22px,4vw,34px)}}
+  p.big{{margin:0 0 10px;color:var(--muted);font-size:clamp(16px,2.6vw,20px)}}
+  .card{{background:var(--card);border:2px solid var(--outline);border-radius:16px;padding:16px;margin:18px 0;box-shadow:0 6px 18px rgba(0,0,0,.35)}}
+  .pill{{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--outline);border-radius:999px;padding:6px 10px;margin:4px 8px 0 0;color:var(--muted);font-size:14px}}
+  .dot{{width:10px;height:10px;border-radius:50%;background:#ef4444}} .ok{{background:var(--ok)}} .warnc{{background:var(--warn)}}
+  button{{cursor:pointer;border:none;border-radius:14px;padding:14px 18px;font-size:18px;font-weight:700}}
+  .primary{{background:var(--red);color:#fff;box-shadow:0 6px 14px rgba(239,68,68,.3)}}
+  .secondary{{background:#1f2937;color:#fff;border:2px solid var(--outline)}}
+  button:disabled{{opacity:.6;cursor:not-allowed}}
+  pre{{white-space:pre-wrap;word-break:break-word;font-size:14px}}
+  .mono{{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>One-Tap Contract Verify (Sourcify)</h1>
-  <p class="big">Auto-fetching your files from <span class="mono">https://github.com/blin-arttina/Assets</span> (branch <b>main</b>). If the dots are green, tap <span class="kbd">Verify with Sourcify</span>.</p>
+  <h1>Auto Verify (Sourcify)</h1>
+  <p class="big">This page compiles your embedded Solidity, then automatically verifies on Polygon. When done, you can download <b>metadata.json</b> and <b>ABI.json</b>.</p>
 
-  <div class="card" aria-labelledby="autoTitle">
-    <h2 id="autoTitle" style="margin-top:0">Auto-loaded from GitHub</h2>
-    <div id="metaStat" class="status"><span class="dot ng"></span><span>metadata.json</span></div>
-    <div id="solStat" class="status"><span class="dot ng"></span><span>Solidity source</span></div>
-    <div class="tiny">I try the following raw URLs in the repo root (then <code>contracts/</code>):<br>
-      <code class="mono">metadata.json</code><br>
-      <code class="mono">AssetsAlertNFT.sol</code> • <code class="mono">AssetsAlertNFT_FINAL_FIXED.sol</code> • <code class="mono">AssetsAlertNFT_FINAL.sol</code> • <code class="mono">AssetsAlertNFT.sol.txt</code>
+  <div class="card">
+    <div class="pill"><span id="dotCompile" class="dot"></span> Compile</div>
+    <div class="pill"><span id="dotMeta" class="dot"></span> Metadata ready</div>
+    <div class="pill"><span id="dotVerify" class="dot"></span> Sourcify verify</div>
+    <div class="pill"><span id="dotDone" class="dot"></span> Done</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="downloadMeta" class="secondary" disabled>Download metadata.json</button>
+      <button id="downloadAbi" class="secondary" disabled>Download ABI.json</button>
+      <button id="statusBtn" class="secondary">Check Status</button>
+      <button id="speakBtn" class="secondary">Read Aloud</button>
+      <button id="copyBtn" class="secondary">Copy Response</button>
     </div>
-    <div class="tiny">Raw base: <code class="mono">https://raw.githubusercontent.com/blin-arttina/Assets/refs/heads/main/</code></div>
   </div>
 
-  <div class="card" aria-labelledby="addrTitle">
-    <h2 id="addrTitle" style="margin-top:0">Address & chain</h2>
-    <div class="row">
-      <div>
-        <label for="address">Contract address</label>
-        <input id="address" placeholder="0x..." inputmode="text" autocomplete="off" />
-      </div>
-      <div>
-        <label for="chain">Chain</label>
-        <select id="chain">
-          <option value="137">Polygon Mainnet (137)</option>
-          <option value="80001">Polygon Mumbai (80001)</option>
-          <option value="1">Ethereum Mainnet (1)</option>
-          <option value="11155111">Ethereum Sepolia (11155111)</option>
-        </select>
-      </div>
-    </div>
-    <div class="tiny">Pre-filled with your Polygon mainnet address. You can still edit.</div>
+  <div class="card">
+    <h2 style="margin:0 0 8px">Output</h2>
+    <pre id="out">Preparing…</pre>
   </div>
-
-  <div class="card" aria-labelledby="manualTitle">
-    <h2 id="manualTitle" style="margin-top:0">Optional: pick files manually</h2>
-    <div class="row">
-      <div>
-        <label for="metadata">metadata.json</label>
-        <input id="metadata" type="file" accept=".json,application/json" />
-      </div>
-      <div>
-        <label for="source">Contract .sol file</label>
-        <input id="source" type="file" accept=".sol,text/plain" />
-      </div>
-    </div>
-    <p class="tiny">If auto-load is green above, you can ignore these.</p>
-  </div>
-
-  <div class="btns">
-    <button id="verifyBtn" aria-label="Verify with Sourcify">Verify with Sourcify</button>
-    <button id="checkBtn" class="secondary" aria-label="Check Status on Sourcify">Check Status</button>
-    <button id="speakBtn" class="secondary" aria-label="Read response aloud">Read Aloud</button>
-    <button id="copyBtn" class="secondary" aria-label="Copy response to clipboard">Copy Response</button>
-  </div>
-
-  <div class="card" aria-live="polite" aria-atomic="true">
-    <h2 style="margin-top:0">Sourcify response:</h2>
-    <pre id="out">(waiting)</pre>
-  </div>
-
-  <details class="card">
-    <summary><b>What this page does</b></summary>
-    <ul>
-      <li>On load, fetches your <code>metadata.json</code> and a likely-named <code>.sol</code> directly from GitHub raw.</li>
-      <li>Prefills your contract address and Polygon Mainnet (137).</li>
-      <li>On Verify, uploads those files to Sourcify: <code>https://sourcify.dev/server/verify/files</code>.</li>
-      <li>You can press <b>Check Status</b> anytime to confirm match.</li>
-    </ul>
-  </details>
 </div>
 
+<script id="embeddedSources" type="application/json">
+{embedded_sources_json}
+</script>
+
 <script>
-const $ = (id) => document.getElementById(id);
-const out = $("out");
-let autoMetaBlob = null;
-let autoSolBlob  = null;
+const ADDRESS = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E"; // Tina
+const CHAIN = "137"; // Polygon Mainnet
+const COMPILERS = ["v0.8.30+commit.73712a01","v0.8.26+commit.8a97fa7a","v0.8.24+commit.e11b9ed9","v0.8.20+commit.a1b79de6"];
 
-const RAW_BASE = "https://raw.githubusercontent.com/blin-arttina/Assets/refs/heads/main/";
-const SOL_CANDIDATES = [
-  "AssetsAlertNFT.sol",
-  "AssetsAlertNFT_FINAL_FIXED.sol",
-  "AssetsAlertNFT_FINAL.sol",
-  "AssetsAlertNFT.sol.txt",
-  "contracts/AssetsAlertNFT.sol",
-  "contracts/AssetsAlertNFT_FINAL_FIXED.sol"
-];
+const out = document.getElementById("out");
+function setOut(obj){{ out.textContent = (typeof obj === "string") ? obj : JSON.stringify(obj,null,2); }}
+function dot(id, ok){{ const el = document.getElementById(id); el.className = "dot " + (ok?"ok":""); }}
+function say(text){{ try{{ const u=new SpeechSynthesisUtterance(text); u.rate=.95; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch{{}} }}
 
-function setOut(obj){
-  try{ out.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2); }
-  catch(e){ out.textContent = String(obj); }
+let metadataBlob=null, abiBlob=null, sourcesForUpload=[];
+
+async function loadSolc(v){{
+  const url = "https://binaries.soliditylang.org/bin/soljson-" + v + ".js";
+  const res = await fetch(url); if(!res.ok) throw new Error("Failed to fetch "+v);
+  const js = await res.text();
+  const blob = new Blob([js], {{type:"text/javascript"}});
+  const blobURL = URL.createObjectURL(blob);
+  await new Promise((resolve,reject)=>{{ const s=document.createElement("script"); s.src=blobURL; s.onload=resolve; s.onerror=()=>reject(new Error("solc load failed")); document.head.appendChild(s); }});
+  if(!window.solc) throw new Error("solc missing");
+  return window.solc;
+}}
+
+function makeStdJson(sources){{
+  const srcs = {{}}; Object.keys(sources).forEach(p=>srcs[p]={{content:sources[p]}});
+  return {{
+    language:"Solidity",
+    settings:{{
+      optimizer:{enabled:true, runs:200},
+      metadata:{useLiteralContent:true},
+      outputSelection:{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","metadata"]}}
+    }},
+    sources: srcs
+  }};
 }
-function setDot(elId, ok){ const el = $(elId); const dot = el.querySelector(".dot"); dot.className = "dot " + (ok ? "ok" : "ng"); }
 
-async function tryFetch(url){
-  try{
-    const res = await fetch(url, {cache:"no-store"});
-    if(!res.ok) return null;
-    const ab = await res.arrayBuffer();
-    return new Blob([ab]);
-  } catch { return null; }
-}
-
-async function autoLoad(){
-  // Prefill address/chain
-  const saved = localStorage.getItem("lastAddress");
-  const defaultAddr = "0xCdb25eb86266cAA0C175144eF4FB241A2F79390E";
-  $("address").value = saved && /^0x[a-fA-F0-9]{40}$/.test(saved) ? saved : defaultAddr;
-  $("chain").value = "137";
-
-  // metadata.json
-  autoMetaBlob = await tryFetch(RAW_BASE + "metadata.json");
-  setDot("metaStat", !!autoMetaBlob);
-
-  // Try all candidate .sol names
-  for (const path of SOL_CANDIDATES){
-    autoSolBlob = await tryFetch(RAW_BASE + path);
-    if (autoSolBlob) break;
-  }
-  setDot("solStat", !!autoSolBlob);
-}
-document.addEventListener("DOMContentLoaded", autoLoad);
-
-async function verify(){
-  const metaInput = $("metadata").files[0];
-  const srcInput  = $("source").files[0];
-  const meta = metaInput || autoMetaBlob;
-  const src  = srcInput  || autoSolBlob;
-
-  const address = $("address").value.trim();
-  const chain = $("chain").value;
-
-  if(!meta){ setOut({error:"Missing metadata.json in repo root. Name it exactly 'metadata.json' or choose it manually."}); return; }
-  if(!src){ setOut({error:"Couldn't find your Solidity source in repo root. Try one of the listed names, or choose manually."}); return; }
-  if(!address || !/^0x[a-fA-F0-9]{40}$/.test(address)){ setOut({error:"Enter a valid 0x contract address"}); return; }
-
-  const fd = new FormData();
-  fd.append("address", address);
-  fd.append("chain", chain);
-  fd.append("files", meta, "metadata.json");
-  fd.append("files", src, "AssetsAlertNFT.sol");
-
-  localStorage.setItem("lastAddress", address);
-
-  $("verifyBtn").disabled = true;
-  setOut("Uploading to Sourcify…");
-  try {
-    const res = await fetch("https://sourcify.dev/server/verify/files", { method:"POST", body: fd });
-    const data = await res.json().catch(()=>({status:res.status, text:"Non-JSON response"}));
+async function autoRun(){{
+  try{{
+    // 1) Load sources
+    const sources = JSON.parse(document.getElementById("embeddedSources").textContent);
+    // 2) Load a compiler that works
+    setOut("Loading compiler…");
+    let solc=null, used=null, lastErr=null;
+    for(const v of COMPILERS){{
+      try{{ solc = await loadSolc(v); used=v; break; }}catch(e){{ lastErr=e; }}
+    }}
+    if(!solc) throw lastErr || new Error("No compiler available");
+    // 3) Compile
+    setOut({{step:"compile", compiler:used}});
+    const input = makeStdJson(sources);
+    const output = JSON.parse(solc.compile(JSON.stringify(input)));
+    if(output.errors){{
+      const errs = output.errors.filter(e=>e.severity==="error");
+      if(errs.length){{ setOut(output.errors); say("Compile error."); return; }}
+    }}
+    dot("dotCompile", true);
+    // 4) Extract first metadata + ABI
+    let meta=null, abi=null;
+    const file = Object.keys(output.contracts)[0];
+    if(file){{
+      const map = output.contracts[file];
+      for(const name in map){{
+        if(map[name].metadata){{ meta = map[name].metadata; }}
+        if(map[name].abi){{ abi = JSON.stringify(map[name].abi, null, 2); }}
+        if(meta && abi) break;
+      }}
+    }}
+    if(!meta) throw new Error("No metadata produced");
+    metadataBlob = new Blob([meta], {{type:"application/json"}});
+    abiBlob = new Blob([abi || "[]"], {{type:"application/json"}});
+    document.getElementById("downloadMeta").disabled = false;
+    document.getElementById("downloadAbi").disabled = false;
+    dot("dotMeta", true);
+    // Prepare sources
+    sourcesForUpload = Object.keys(sources).map(p=>({{name:p, blob:new Blob([sources[p]], {{type:"text/plain"}})}}));
+    // 5) Auto-verify
+    setOut({{step:"verify", note:"Sending metadata + sources to Sourcify…"}});
+    const fd = new FormData();
+    fd.append("address", ADDRESS);
+    fd.append("chain", CHAIN);
+    fd.append("files", metadataBlob, "metadata.json");
+    for(const s of sourcesForUpload){{ fd.append("files", s.blob, s.name); }}
+    const res = await fetch("https://sourcify.dev/server/verify/files", {{method:"POST", body:fd}});
+    const data = await res.json().catch(()=>({{status:res.status, text:"Non-JSON response"}}));
+    dot("dotVerify", true);
     setOut(data);
-  } catch (e){ setOut({error:String(e)}); } 
-  finally { $("verifyBtn").disabled = false; }
-}
+    say("Verification step completed.");
+    dot("dotDone", true);
+  }}catch(e){{
+    setOut({{error:String(e)}});
+    say("There was an error.");
+  }}
+}}
 
-async function check(){
-  const address = $("address").value.trim();
-  const chain = $("chain").value;
-  if(!address || !/^0x[a-fA-F0-9]{40}$/.test(address)){ setOut({error:"Enter a valid 0x contract address to check"}); return; }
-  $("checkBtn").disabled = true;
-  setOut("Checking status…");
-  try{
-    const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${address}&chainIds=${chain}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    setOut(data);
-  }catch(e){ setOut({error:String(e)}); }
-  finally{ $("checkBtn").disabled = false; }
-}
+document.getElementById("downloadMeta").addEventListener("click", ()=>{{
+  if(!metadataBlob) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(metadataBlob);
+  a.download = "metadata.json"; document.body.appendChild(a); a.click(); a.remove();
+}});
+document.getElementById("downloadAbi").addEventListener("click", ()=>{{
+  if(!abiBlob) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(abiBlob);
+  a.download = "ABI.json"; document.body.appendChild(a); a.click(); a.remove();
+}});
+document.getElementById("statusBtn").addEventListener("click", async()=>{{
+  try{{
+    const url = `https://sourcify.dev/server/check-all-by-addresses?addresses=${{ADDRESS}}&chainIds=${{CHAIN}}`;
+    const r = await fetch(url); setOut(await r.json());
+  }}catch(e){{ setOut({{error:String(e)}}); }}
+}});
+document.getElementById("copyBtn").addEventListener("click", async()=>{{
+  try{{ await navigator.clipboard.writeText(out.textContent||""); alert("Copied."); }}catch(e){{ alert("Copy failed: "+e); }}
+}});
+document.getElementById("speakBtn").addEventListener("click", ()=>say(out.textContent||"No response yet."));
 
-function speak(){
-  const s = window.speechSynthesis; if(!s){ alert("Speech not supported in this browser."); return; }
-  s.cancel(); const u = new SpeechSynthesisUtterance(out.textContent || "No response yet.");
-  u.rate = 0.95; u.pitch = 1.0; u.lang = "en-US"; s.speak(u);
-}
-
-async function copy(){
-  try{ await navigator.clipboard.writeText(out.textContent || ""); alert("Response copied to clipboard."); }
-  catch(e){ alert("Couldn't copy: " + e); }
-}
-
-$("verifyBtn").addEventListener("click", verify);
-$("checkBtn").addEventListener("click", check);
-$("speakBtn").addEventListener("click", speak);
-$("copyBtn").addEventListener("click", copy);
+// run on load
+document.addEventListener("DOMContentLoaded", autoRun);
 </script>
 </body>
 </html>
